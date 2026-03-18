@@ -16,22 +16,23 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
 
     /**
-     * This method runs for EVERY HTTP request (like Django middleware).
+     * Intercepts every HTTP request to validate the JWT token.
      *
      * Flow:
      * 1. Extract JWT token from the "Authorization: Bearer <token>" header
      * 2. Validate the token (signature + expiration)
-     * 3. If valid, load the user and set them as authenticated in Spring Security
-     * context
+     * 3. If valid, load the user and set them as authenticated in the SecurityContext
      * 4. Continue the filter chain (request proceeds to the controller)
      */
     @Override
@@ -41,17 +42,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = getTokenFromRequest(request);
 
-        if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
-            String username = jwtTokenProvider.getUsernameFromToken(token);
+        if (StringUtils.hasText(token)) {
+            if (jwtTokenProvider.validateToken(token)) {
+                String username = jwtTokenProvider.getUsernameFromToken(token);
 
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
-                    null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
 
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                log.warn("Invalid or expired JWT token for request: {} {}",
+                        request.getMethod(), request.getRequestURI());
+            }
         }
 
         filterChain.doFilter(request, response);

@@ -2,8 +2,6 @@ package com.felipelima.clientmanager.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -50,7 +48,6 @@ class ClientServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Build a valid ClientRequest
         AddressRequest addressRequest = new AddressRequest(
                 "70040-010", "SBS Quadra 2", "Asa Sul", "Brasilia", "DF", null);
 
@@ -59,12 +56,11 @@ class ClientServiceTest {
 
         clientRequest = new ClientRequest(
                 "Joao Silva",
-                "123.456.789-00",
+                "123.456.789-09",
                 addressRequest,
                 Collections.singletonList(phoneRequest),
                 Collections.singletonList(emailRequest));
 
-        // Build a matching Client entity (as it would be saved)
         Address address = new Address(1L, "70040010", "SBS Quadra 2", "Asa Sul", "Brasilia", "DF", null);
 
         Phone phone = new Phone(1L, PhoneTypeEnum.MOBILE, "61999998888");
@@ -73,7 +69,7 @@ class ClientServiceTest {
         clientEntity = new Client();
         clientEntity.setId(1L);
         clientEntity.setName("Joao Silva");
-        clientEntity.setCpf("12345678900");
+        clientEntity.setCpf("12345678909");
         clientEntity.setAddress(address);
         clientEntity.setPhones(new ArrayList<>(Collections.singletonList(phone)));
         clientEntity.setEmails(new ArrayList<>(Collections.singletonList(email)));
@@ -90,7 +86,7 @@ class ClientServiceTest {
         @Test
         @DisplayName("Should create client successfully")
         void createSuccess() {
-            when(clientRepository.existsByCpf("12345678900")).thenReturn(false);
+            when(clientRepository.existsByCpf("12345678909")).thenReturn(false);
             when(clientRepository.save(any(Client.class))).thenReturn(clientEntity);
 
             ClientResponse response = clientService.create(clientRequest);
@@ -98,19 +94,19 @@ class ClientServiceTest {
             assertNotNull(response);
             assertEquals(1L, response.getId());
             assertEquals("Joao Silva", response.getName());
-            assertEquals("123.456.789-00", response.getCpf());
+            assertEquals("123.456.789-09", response.getCpf());
             assertEquals("70040-010", response.getAddress().getZipCode());
             assertEquals("(61) 99999-8888", response.getPhones().get(0).getNumber());
             assertEquals("joao@email.com", response.getEmails().get(0).getAddress());
 
-            verify(clientRepository).existsByCpf("12345678900");
+            verify(clientRepository).existsByCpf("12345678909");
             verify(clientRepository).save(any(Client.class));
         }
 
         @Test
         @DisplayName("Should store CPF without mask")
         void createStoresCpfWithoutMask() {
-            when(clientRepository.existsByCpf("12345678900")).thenReturn(false);
+            when(clientRepository.existsByCpf("12345678909")).thenReturn(false);
             when(clientRepository.save(any(Client.class))).thenReturn(clientEntity);
 
             clientService.create(clientRequest);
@@ -118,13 +114,13 @@ class ClientServiceTest {
             ArgumentCaptor<Client> captor = ArgumentCaptor.forClass(Client.class);
             verify(clientRepository).save(captor.capture());
 
-            assertEquals("12345678900", captor.getValue().getCpf());
+            assertEquals("12345678909", captor.getValue().getCpf());
         }
 
         @Test
         @DisplayName("Should throw BusinessException for duplicate CPF")
         void createDuplicateCpf() {
-            when(clientRepository.existsByCpf("12345678900")).thenReturn(true);
+            when(clientRepository.existsByCpf("12345678909")).thenReturn(true);
 
             BusinessException exception = assertThrows(BusinessException.class,
                     () -> clientService.create(clientRequest));
@@ -136,7 +132,7 @@ class ClientServiceTest {
         @Test
         @DisplayName("Should store phone number without mask")
         void createStoresPhoneWithoutMask() {
-            when(clientRepository.existsByCpf("12345678900")).thenReturn(false);
+            when(clientRepository.existsByCpf("12345678909")).thenReturn(false);
             when(clientRepository.save(any(Client.class))).thenReturn(clientEntity);
 
             clientService.create(clientRequest);
@@ -150,7 +146,7 @@ class ClientServiceTest {
         @Test
         @DisplayName("Should store zip code without mask")
         void createStoresZipCodeWithoutMask() {
-            when(clientRepository.existsByCpf("12345678900")).thenReturn(false);
+            when(clientRepository.existsByCpf("12345678909")).thenReturn(false);
             when(clientRepository.save(any(Client.class))).thenReturn(clientEntity);
 
             clientService.create(clientRequest);
@@ -178,7 +174,7 @@ class ClientServiceTest {
             List<ClientResponse> result = clientService.findAll();
 
             assertEquals(1, result.size());
-            assertEquals("123.456.789-00", result.get(0).getCpf());
+            assertEquals("123.456.789-09", result.get(0).getCpf());
             assertEquals("70040-010", result.get(0).getAddress().getZipCode());
         }
 
@@ -231,7 +227,7 @@ class ClientServiceTest {
             assertNotNull(response);
             assertEquals(1L, response.getId());
             assertEquals("Joao Silva", response.getName());
-            assertEquals("123.456.789-00", response.getCpf());
+            assertEquals("123.456.789-09", response.getCpf());
         }
 
         @Test
@@ -258,12 +254,12 @@ class ClientServiceTest {
         @DisplayName("Should update client successfully")
         void updateSuccess() {
             when(clientRepository.findById(1L)).thenReturn(Optional.of(clientEntity));
-            when(clientRepository.existsByCpfAndIdNot("12345678900", 1L)).thenReturn(false);
+            when(clientRepository.existsByCpfAndIdNot("12345678909", 1L)).thenReturn(false);
             when(clientRepository.save(any(Client.class))).thenReturn(clientEntity);
 
             ClientRequest updateRequest = new ClientRequest(
                     "Joao Silva Updated",
-                    "123.456.789-00",
+                    "123.456.789-09",
                     new AddressRequest("70040-010", "SBS Quadra 2 Bloco A", "Asa Sul", "Brasilia", "DF", "Sala 501"),
                     Collections.singletonList(new PhoneRequest("MOBILE", "(61) 99999-7777")),
                     Collections.singletonList(new EmailRequest("joao.novo@email.com")));
@@ -289,7 +285,7 @@ class ClientServiceTest {
         @DisplayName("Should throw BusinessException when CPF belongs to another client")
         void updateDuplicateCpf() {
             when(clientRepository.findById(1L)).thenReturn(Optional.of(clientEntity));
-            when(clientRepository.existsByCpfAndIdNot("12345678900", 1L)).thenReturn(true);
+            when(clientRepository.existsByCpfAndIdNot("12345678909", 1L)).thenReturn(true);
 
             assertThrows(BusinessException.class,
                     () -> clientService.update(1L, clientRequest));

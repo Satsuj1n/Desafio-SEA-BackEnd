@@ -1,14 +1,8 @@
 package com.felipelima.clientmanager.controller;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Collections;
 
@@ -78,7 +72,7 @@ class ClientControllerIntegrationTest {
 
         return new ClientRequest(
                 "Joao Silva",
-                "123.456.789-00",
+                "123.456.789-09",
                 address,
                 Collections.singletonList(phone),
                 Collections.singletonList(email));
@@ -118,7 +112,7 @@ class ClientControllerIntegrationTest {
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").isNumber())
                     .andExpect(jsonPath("$.name").value("Joao Silva"))
-                    .andExpect(jsonPath("$.cpf").value("123.456.789-00"))
+                    .andExpect(jsonPath("$.cpf").value("123.456.789-09"))
                     .andExpect(jsonPath("$.address.zipCode").value("70040-010"))
                     .andExpect(jsonPath("$.phones[0].number").value("(61) 99999-8888"))
                     .andExpect(jsonPath("$.phones[0].type").value("MOBILE"))
@@ -209,6 +203,58 @@ class ClientControllerIntegrationTest {
         }
 
         @Test
+        @DisplayName("400 - Should reject invalid CPF (wrong check digits)")
+        void createInvalidCpf() throws Exception {
+            ClientRequest request = buildValidClientRequest();
+            request.setCpf("123.456.789-00");
+
+            mockMvc.perform(post("/clients")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("400 - Should reject CPF with all identical digits")
+        void createCpfAllSameDigits() throws Exception {
+            ClientRequest request = buildValidClientRequest();
+            request.setCpf("111.111.111-11");
+
+            mockMvc.perform(post("/clients")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("400 - Should reject invalid phone type")
+        void createInvalidPhoneType() throws Exception {
+            ClientRequest request = buildValidClientRequest();
+            request.setPhones(Collections.singletonList(new PhoneRequest("INVALID", "61999998888")));
+
+            mockMvc.perform(post("/clients")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("400 - Should reject null address")
+        void createNullAddress() throws Exception {
+            ClientRequest request = buildValidClientRequest();
+            request.setAddress(null);
+
+            mockMvc.perform(post("/clients")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
         @DisplayName("403 - Should deny creation for USER role")
         void createForbiddenForUser() throws Exception {
             ClientRequest request = buildValidClientRequest();
@@ -250,7 +296,7 @@ class ClientControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$").isArray())
                     .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].cpf").value("123.456.789-00"));
+                    .andExpect(jsonPath("$[0].cpf").value("123.456.789-09"));
         }
 
         @Test
@@ -301,7 +347,7 @@ class ClientControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(id))
                     .andExpect(jsonPath("$.name").value("Joao Silva"))
-                    .andExpect(jsonPath("$.cpf").value("123.456.789-00"));
+                    .andExpect(jsonPath("$.cpf").value("123.456.789-09"));
         }
 
         @Test
@@ -347,7 +393,7 @@ class ClientControllerIntegrationTest {
 
             ClientRequest updateRequest = new ClientRequest(
                     "Joao Silva Updated",
-                    "123.456.789-00",
+                    "123.456.789-09",
                     new AddressRequest("70040-010", "SBS Quadra 2 Bloco A", "Asa Sul", "Brasilia", "DF", "Sala 501"),
                     Collections.singletonList(new PhoneRequest("MOBILE", "(61) 99999-7777")),
                     Collections.singletonList(new EmailRequest("joao.novo@email.com")));
@@ -432,7 +478,6 @@ class ClientControllerIntegrationTest {
                     .header("Authorization", "Bearer " + adminToken))
                     .andExpect(status().isNoContent());
 
-            // Confirm deleted
             mockMvc.perform(get("/clients/{id}", id)
                     .header("Authorization", "Bearer " + adminToken))
                     .andExpect(status().isNotFound());
@@ -480,7 +525,7 @@ class ClientControllerIntegrationTest {
             mockMvc.perform(get("/clients/{id}", id)
                     .header("Authorization", "Bearer " + adminToken))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.cpf").value("123.456.789-00"))
+                    .andExpect(jsonPath("$.cpf").value("123.456.789-09"))
                     .andExpect(jsonPath("$.address.zipCode").value("70040-010"))
                     .andExpect(jsonPath("$.phones[0].number").value("(61) 99999-8888"));
         }
