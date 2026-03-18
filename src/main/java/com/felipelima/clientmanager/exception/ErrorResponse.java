@@ -1,26 +1,27 @@
 package com.felipelima.clientmanager.exception;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 /**
  * Standardized error response returned by all error endpoints.
- * 
+ *
  * Every error in the API returns this same structure,
  * making it predictable for frontend consumers.
- * 
+ *
  * Example:
  * {
- *   "timestamp": "2026-03-17T12:00:00",
- *   "status": 400,
- *   "error": "Bad Request",
- *   "message": "Validation failed",
- *   "errors": ["Name is required", "CPF is required"]
+ * "timestamp": "2026-03-17T12:00:00",
+ * "status": 400,
+ * "error": "Bad Request",
+ * "message": "Validation failed",
+ * "errors": ["Name is required", "CPF is required"]
  * }
  */
 @Data

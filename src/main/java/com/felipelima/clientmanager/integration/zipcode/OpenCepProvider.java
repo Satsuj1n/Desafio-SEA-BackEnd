@@ -1,20 +1,22 @@
 package com.felipelima.clientmanager.integration.zipcode;
 
-import com.felipelima.clientmanager.dto.response.ZipCodeResponse;
-import com.felipelima.clientmanager.service.MaskUtils;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.felipelima.clientmanager.dto.response.ZipCodeResponse;
+import com.felipelima.clientmanager.service.MaskUtils;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Fallback zip code provider using OpenCEP API (https://opencep.com/).
- * 
+ *
  * @Order(2) marks this as the second provider to try,
  * only used when the primary provider (ViaCEP) fails.
- * 
+ *
  * OpenCEP is a free, open-source alternative to ViaCEP
  * with a compatible response format.
  */
@@ -49,8 +51,7 @@ public class OpenCepProvider implements ZipCodeProvider {
                     response.getComplemento(),
                     response.getBairro(),
                     response.getLocalidade(),
-                    response.getUf()
-            );
+                    response.getUf());
 
         } catch (RestClientException ex) {
             log.error("[OpenCEP] Service unavailable: {}", ex.getMessage());

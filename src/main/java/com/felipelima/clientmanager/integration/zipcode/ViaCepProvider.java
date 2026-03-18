@@ -1,17 +1,19 @@
 package com.felipelima.clientmanager.integration.zipcode;
 
-import com.felipelima.clientmanager.dto.response.ZipCodeResponse;
-import com.felipelima.clientmanager.service.MaskUtils;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.felipelima.clientmanager.dto.response.ZipCodeResponse;
+import com.felipelima.clientmanager.service.MaskUtils;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Primary zip code provider using ViaCEP API (https://viacep.com.br/).
- * 
+ *
  * @Order(1) marks this as the first provider to try.
  * If this fails, ZipCodeService will try the next provider in order.
  */
@@ -46,8 +48,7 @@ public class ViaCepProvider implements ZipCodeProvider {
                     response.getComplemento(),
                     response.getBairro(),
                     response.getLocalidade(),
-                    response.getUf()
-            );
+                    response.getUf());
 
         } catch (RestClientException ex) {
             log.error("[ViaCEP] Service unavailable: {}", ex.getMessage());

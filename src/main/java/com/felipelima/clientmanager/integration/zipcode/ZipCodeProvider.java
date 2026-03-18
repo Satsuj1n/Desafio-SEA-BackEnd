@@ -4,12 +4,12 @@ import com.felipelima.clientmanager.dto.response.ZipCodeResponse;
 
 /**
  * Strategy interface for zip code lookup providers.
- * 
+ *
  * Any zip code service (ViaCEP, OpenCEP, etc.) implements this interface.
  * This allows the ZipCodeService to swap providers transparently,
  * following the Dependency Inversion Principle: the system depends on
  * the abstraction, not on a specific external API.
- * 
+ *
  * In Django terms, this is like defining an abstract base class
  * that multiple service implementations can inherit from.
  */

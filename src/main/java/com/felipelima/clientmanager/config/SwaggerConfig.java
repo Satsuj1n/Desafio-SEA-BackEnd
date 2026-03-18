@@ -1,24 +1,28 @@
 package com.felipelima.clientmanager.config;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.*;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Swagger/OpenAPI configuration.
- * 
+ *
  * Generates interactive API documentation at /swagger-ui/index.html
  * The evaluator can test all endpoints directly from the browser.
- * 
+ *
  * The security scheme configuration adds the "Authorize" button
  * in Swagger UI, where you can paste the JWT token and all
  * subsequent requests will include the Authorization header.

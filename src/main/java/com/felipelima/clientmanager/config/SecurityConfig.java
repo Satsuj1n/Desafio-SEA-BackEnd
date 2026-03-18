@@ -1,7 +1,5 @@
 package com.felipelima.clientmanager.config;
 
-import com.felipelima.clientmanager.security.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,6 +13,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.felipelima.clientmanager.security.JwtAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -30,16 +32,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // Disable CSRF: API is stateless, uses JWT instead of cookies
-            .csrf().disable()
+                // Disable CSRF: API is stateless, uses JWT instead of cookies
+                .csrf().disable()
 
-            // No server-side sessions: JWT handles authentication state
-            .sessionManagement()
+                // No server-side sessions: JWT handles authentication state
+                .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
+                .and()
 
-            // Route-level authorization rules
-            .authorizeRequests()
+                // Route-level authorization rules
+                .authorizeRequests()
                 // Public endpoints (no authentication needed)
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
@@ -56,14 +58,14 @@ public class SecurityConfig {
 
                 // Everything else requires authentication
                 .anyRequest().authenticated()
-            .and()
+                .and()
 
-            // Allow H2 console to render in frames
-            .headers().frameOptions().sameOrigin()
-            .and()
+                // Allow H2 console to render in frames
+                .headers().frameOptions().sameOrigin()
+                .and()
 
-            // Register our JWT filter BEFORE Spring's default authentication filter
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                // Register our JWT filter BEFORE Spring's default authentication filter
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

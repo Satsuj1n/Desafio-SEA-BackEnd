@@ -1,35 +1,37 @@
 package com.felipelima.clientmanager.integration.zipcode;
 
-import com.felipelima.clientmanager.dto.response.ZipCodeResponse;
-import com.felipelima.clientmanager.exception.BusinessException;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.felipelima.clientmanager.dto.response.ZipCodeResponse;
+import com.felipelima.clientmanager.exception.BusinessException;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Orchestrates zip code lookup with automatic fallback.
- * 
+ *
  * Uses the Chain of Responsibility pattern: tries each provider in order
  * (defined by @Order annotation). If the primary provider fails (service
  * unavailable), it automatically tries the next one. If all providers fail,
  * it throws a clear error message.
- * 
+ *
  * The providers are injected as a List<ZipCodeProvider>, which Spring
  * automatically orders by @Order value. This means adding a new provider
  * is just creating a new class with @Order(3) — no changes here.
- * 
+ *
  * Flow:
  * 1. Try ViaCEP (primary, @Order 1)
- *    - Success → return address
- *    - Invalid ZIP → return "invalid zip code" error
- *    - Service down → try next provider
+ * - Success → return address
+ * - Invalid ZIP → return "invalid zip code" error
+ * - Service down → try next provider
  * 2. Try OpenCEP (fallback, @Order 2)
- *    - Success → return address
- *    - Invalid ZIP → return "invalid zip code" error
- *    - Service down → all providers exhausted
+ * - Success → return address
+ * - Invalid ZIP → return "invalid zip code" error
+ * - Service down → all providers exhausted
  * 3. All failed → return "all services unavailable" error
- * 
+ *
  * Interview talking point: "I implemented a fallback chain using the
  * Strategy pattern with Spring's @Order injection. Adding a new provider
  * requires zero changes to existing code — just a new class. This follows
@@ -52,8 +54,9 @@ public class ZipCodeService {
 
     /**
      * Looks up a zip code, trying each provider in order.
-     * 
-     * Returns null from a provider means "invalid zip code" (not a service failure).
+     *
+     * Returns null from a provider means "invalid zip code" (not a service
+     * failure).
      * RuntimeException from a provider means "service unavailable" (try next).
      */
     public ZipCodeResponse lookup(String zipCode) {
@@ -86,7 +89,6 @@ public class ZipCodeService {
         log.error("All zip code providers are unavailable");
         throw new BusinessException(
                 "All zip code services are currently unavailable. "
-                + "You can fill the address fields manually."
-        );
+                        + "You can fill the address fields manually.");
     }
 }
