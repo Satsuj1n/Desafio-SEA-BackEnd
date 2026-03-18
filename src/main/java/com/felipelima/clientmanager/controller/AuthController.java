@@ -27,13 +27,6 @@ public class AuthController {
      * Receives username + password, returns a JWT token.
      * This endpoint is public (configured in SecurityConfig).
      *
-     * Equivalent in Django REST Framework:
-     * class LoginView(APIView):
-     * permission_classes = [AllowAny]
-     * def post(self, request):
-     * serializer = LoginSerializer(data=request.data)
-     * serializer.is_valid(raise_exception=True)
-     * return Response(auth_service.login(serializer.validated_data))
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {

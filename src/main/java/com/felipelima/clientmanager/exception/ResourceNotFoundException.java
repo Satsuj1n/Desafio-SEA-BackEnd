@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * database.
  *
  * @ResponseStatus automatically maps this exception to HTTP 404.
- *                 In Django terms: equivalent to raising Http404 or using
- *                 get_object_or_404().
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {

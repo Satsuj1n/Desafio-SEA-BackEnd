@@ -72,7 +72,6 @@ public class SecurityConfig {
 
     /**
      * Password encoder: BCrypt is the industry standard.
-     * Same algorithm Django uses by default (BCryptSHA256PasswordHasher).
      */
     @Bean
     public PasswordEncoder passwordEncoder() {

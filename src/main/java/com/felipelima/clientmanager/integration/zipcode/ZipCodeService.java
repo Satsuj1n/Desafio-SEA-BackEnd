@@ -32,10 +32,6 @@ import lombok.extern.slf4j.Slf4j;
  * - Service down → all providers exhausted
  * 3. All failed → return "all services unavailable" error
  *
- * Interview talking point: "I implemented a fallback chain using the
- * Strategy pattern with Spring's @Order injection. Adding a new provider
- * requires zero changes to existing code — just a new class. This follows
- * the Open/Closed Principle."
  */
 @Service
 @Slf4j

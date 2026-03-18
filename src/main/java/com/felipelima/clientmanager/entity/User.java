@@ -13,7 +13,7 @@ import com.felipelima.clientmanager.entity.enums.RoleEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")

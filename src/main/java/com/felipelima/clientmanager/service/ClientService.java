@@ -74,7 +74,7 @@ public class ClientService {
          * Finds a client by ID.
          * Throws ResourceNotFoundException if not found (returns HTTP 404).
          */
-        @SuppressWarnings("null")
+
         @Transactional(readOnly = true)
         public ClientResponse findById(Long id) {
                 Client client = clientRepository.findById(id)
@@ -89,7 +89,7 @@ public class ClientService {
          * Important: checks if the new CPF conflicts with ANOTHER client
          * (not the one being updated — that's what existsByCpfAndIdNot does).
          */
-        @SuppressWarnings("null")
+
         @Transactional
         public ClientResponse update(Long id, ClientRequest request) {
                 Client client = clientRepository.findById(id)
@@ -114,7 +114,7 @@ public class ClientService {
          * Deletes a client by ID.
          * Cascade removes address, phones, and emails automatically.
          */
-        @SuppressWarnings("null")
+
         @Transactional
         public void delete(Long id) {
                 Client client = clientRepository.findById(id)
@@ -131,7 +131,6 @@ public class ClientService {
         /**
          * Converts ClientRequest DTO to Client entity.
          * This is where mask removal happens for phone numbers.
-         * In DRF terms: equivalent to serializer.create() / serializer.save()
          */
         private Client toEntity(ClientRequest request) {
                 Client client = new Client();
@@ -204,7 +203,6 @@ public class ClientService {
         /**
          * Converts Client entity to ClientResponse DTO.
          * This is where masks are APPLIED (CPF, zip code, phone).
-         * In DRF terms: equivalent to serializer.to_representation()
          */
         private ClientResponse toResponse(Client client) {
                 AddressResponse addressResponse = new AddressResponse(
