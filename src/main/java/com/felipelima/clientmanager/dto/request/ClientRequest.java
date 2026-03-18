@@ -5,8 +5,11 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import com.felipelima.clientmanager.validation.CPF;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,8 +26,10 @@ public class ClientRequest {
     private String name;
 
     @NotBlank(message = "CPF is required")
+    @CPF(message = "Invalid CPF")
     private String cpf;
 
+    @NotNull(message = "Address is required")
     @Valid
     private AddressRequest address;
 
