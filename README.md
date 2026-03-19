@@ -22,7 +22,6 @@ API REST para gerenciamento de clientes com autenticação JWT, integração com
 
 ```bash
 git clone <url-do-repositório>
-cd clientmanager
 mvn spring-boot:run
 ```
 
