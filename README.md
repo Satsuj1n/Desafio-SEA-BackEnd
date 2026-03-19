@@ -21,7 +21,7 @@ API REST para gerenciamento de clientes com autenticação JWT, integração com
 ## Como Executar
 
 ```bash
-git clone <url-do-repositório>
+git clone https://github.com/Satsuj1n/Desafio-SEA-BackEnd.git
 mvn spring-boot:run
 ```
 
